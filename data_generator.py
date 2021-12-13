@@ -103,7 +103,7 @@ def generateData(weights, config, classes_file, input, input_size, conf_thres, n
             break
         
     spinner.stop()
-    output = f"{int(frame_width)}_{int(frame_height)}_{input.split('.')[-2]}.csv"
+    output = f"{int(frame_width)}_{int(frame_height)}_{input.split('.')[-2].split('/')[-1]}.csv"
     if os.path.exists(output) and os.path.isfile(output):
         os.remove(output)
         
