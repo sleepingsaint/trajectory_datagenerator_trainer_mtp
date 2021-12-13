@@ -72,6 +72,8 @@ def generateData(weights, config, classes_file, input, input_size, conf_thres, n
     # loading the darknet model
     yolo = cv2.dnn.readNetFromDarknet(config, weights)
     colors = np.random.randint(0, 255, size=(len(classes), 3), dtype="uint8") 
+    yolo.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+    yolo.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
     
     cap = cv2.VideoCapture(input)
     if not cap.isOpened():
