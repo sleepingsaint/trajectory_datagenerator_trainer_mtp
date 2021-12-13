@@ -103,7 +103,10 @@ def generateData(weights, config, classes_file, input, input_size, conf_thres, n
             break
         
     spinner.stop()
-    output = f"{int(frame_width)}_{int(frame_height)}_{input.split('.')[-2].split('/')[-1]}.csv"
+    if frame_count is None:
+        output = f"{int(frame_width)}_{int(frame_height)}_{input.split('.')[-2].split('/')[-1]}.csv"
+    else:
+        output = f"{int(frame_width)}_{int(frame_height)}_{input.split('.')[-2].split('/')[-1]}_{frame_count}.csv"
     if output_dir is not None:
         output = os.path.join(output_dir, output)
     if os.path.exists(output) and os.path.isfile(output):
