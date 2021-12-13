@@ -57,7 +57,7 @@ def yoloDetect(frame, net, width, height, labels, colors, dataframe: pd.DataFram
     return frame, dataframe
 
 
-def generateData(weights, config, classes_file, input, input_size, conf_thres, nms_thres, frame_count):
+def generateData(weights, config, classes_file, input, input_size, conf_thres, nms_thres, frame_count, output_dir):
             
     validatePath(weights)
     validatePath(config)
@@ -104,9 +104,12 @@ def generateData(weights, config, classes_file, input, input_size, conf_thres, n
         
     spinner.stop()
     output = f"{int(frame_width)}_{int(frame_height)}_{input.split('.')[-2].split('/')[-1]}.csv"
+    if output_dir is not None:
+        output = os.path.join(output_dir, output)
     if os.path.exists(output) and os.path.isfile(output):
         os.remove(output)
-        
+    
+    
     dataframe.to_csv(output, index=True)
     
     cap.release()
@@ -122,6 +125,7 @@ if __name__ == "__main__":
     parser.add_argument("--nms", type=float, default=0.5, help="NMS Threshold")
     parser.add_argument("--conf", type=float, default=0.5, help="Confidence Threshold")
     parser.add_argument("--frame_count", "-f", type=int, default=None, help="No. of frames to generate data")
+    parser.add_argument("--output", '-o', type=str, default=None, help="Directory Path to save the dataset")
     
     args = parser.parse_args()
-    generateData(args.weights, args.config, args.classes, args.input, args.size, args.conf, args.nms, args.frame_count)
+    generateData(args.weights, args.config, args.classes, args.input, args.size, args.conf, args.nms, args.frame_count, args.output)
