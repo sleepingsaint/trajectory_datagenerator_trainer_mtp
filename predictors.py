@@ -1,8 +1,9 @@
 import torch
+from torch._C import device
 import torch.nn as nn
 
 class RNNTrajectory(nn.Module):
-    def __init__(self, input_size, hidden_layer_size, num_layers = 2, batch_first=True):
+    def __init__(self, input_size, hidden_layer_size, device, num_layers = 2, batch_first=True):
         """
         input_size - number of time intervals over which data is taken
          
@@ -18,8 +19,8 @@ class RNNTrajectory(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_layer_size
         self.batch_first = batch_first
-        
-        self.rnn = nn.RNN(input_size, hidden_layer_size, num_layers, batch_first=batch_first)
+        self.device = device
+        self.rnn = nn.RNN(input_size, hidden_layer_size, num_layers, batch_first=batch_first).to(device)
     
     def forward(self, input: torch.Tensor) -> torch.Tensor :
         """
@@ -31,15 +32,15 @@ class RNNTrajectory(nn.Module):
         
         h0 - initial hidden - initialized to zeroes
         """
-        input = torch.transpose(input, 1, 2)
-        h0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size)
+        input = torch.transpose(input, 1, 2).to(self.device)
+        h0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size).to(self.device)
         out, _ = self.rnn(input, h0)
         output = torch.transpose(out, 1, 2)
         
         return output 
     
 class LSTMTrajectory(nn.Module):
-    def __init__(self, input_size, hidden_layer_size, num_layers = 2, batch_first=True):
+    def __init__(self, input_size, hidden_layer_size, device, num_layers = 2, batch_first=True):
         """
         input_size - number of time intervals over which data is taken
          
@@ -55,8 +56,8 @@ class LSTMTrajectory(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_layer_size
         self.batch_first = batch_first
-        
-        self.lstm = nn.LSTM(input_size, hidden_layer_size, num_layers, batch_first=batch_first)
+        self.device = device
+        self.lstm = nn.LSTM(input_size, hidden_layer_size, num_layers, batch_first=batch_first).to(self.device)
     
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         """
@@ -70,18 +71,18 @@ class LSTMTrajectory(nn.Module):
         
         c0 - initial cell state - initialized to zeros
         """
-        input = torch.transpose(input, 1, 2)
-        h0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size)
-        c0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size)
+        input = torch.transpose(input, 1, 2).to(self.device)
+        h0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size).to(self.device)
+        c0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size).to(self.device)
         
         out, _ = self.lstm(input, (h0, c0))
-        output = torch.transpose(out, 1, 2)
+        output = torch.transpose(out, 1, 2).to(self.device)
         
         return output 
 
 
 class GRUTrajectory(nn.Module):
-    def __init__(self, input_size, hidden_layer_size, num_layers = 2, batch_first=True):
+    def __init__(self, input_size, hidden_layer_size, device, num_layers = 2, batch_first=True):
         """
         input_size - number of time intervals over which data is taken
          
@@ -97,8 +98,9 @@ class GRUTrajectory(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_layer_size
         self.batch_first = batch_first
+        self.device = device
         
-        self.gru = nn.GRU(input_size, hidden_layer_size, num_layers, batch_first=batch_first)
+        self.gru = nn.GRU(input_size, hidden_layer_size, num_layers, batch_first=batch_first).to(self.device)
     
     def forward(self, input) -> torch.Tensor:
         """
@@ -110,10 +112,10 @@ class GRUTrajectory(nn.Module):
         
         h0 - initial hidden state - initialized to zeros
         """
-        input = torch.transpose(input, 1, 2)
-        h0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size)
+        input = torch.transpose(input, 1, 2).to(self.device)
+        h0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size).to(self.device)
         out, _ = self.gru(input, h0)
-        output = torch.transpose(out, 1, 2)
+        output = torch.transpose(out, 1, 2).to(self.device)
         
         return output 
 

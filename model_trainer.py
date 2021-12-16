@@ -29,15 +29,14 @@ def trainModel(classes_file, modeltype, dataset_file, input_size, pred_size, epo
 
 		if modeltype == "RNN":
 			from predictors import RNNTrajectory
-			model = RNNTrajectory(input_size, pred_size)
+			model = RNNTrajectory(input_size, pred_size, device)
 		elif modeltype == "LSTM":
 			from predictors import LSTMTrajectory
-			model = LSTMTrajectory(input_size, pred_size)
+			model = LSTMTrajectory(input_size, pred_size, device)
 		elif modeltype == "GRU":			
 			from predictors import GRUTrajectory
-			model = GRUTrajectory(input_size, pred_size)
+			model = GRUTrajectory(input_size, pred_size, device)
 		
-		model = model.to(device)
 		if output_path is None:	
 			dir_path = os.path.join(os.getcwd(), f"output/{classname}_{modeltype}")
 		else:
