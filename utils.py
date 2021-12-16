@@ -19,4 +19,12 @@ def loadClasses(path):
 def ensureDir(path):
     if not os.path.exists(path):
         os.makedirs(path)
-    
+
+def splitDataset(dataset, ratio = 0.2):
+    import torch
+    dataset_len = len(dataset)
+    valid_len = int(dataset_len * ratio)
+    if valid_len == 0:
+        return dataset, dataset
+    train_len = dataset_len - valid_len
+    return  torch.utils.data.random_split(dataset, [train_len, valid_len]) 

@@ -11,17 +11,21 @@ class TrajectoryDataset(Dataset):
         
         super(TrajectoryDataset, self).__init__()
         data = pd.read_csv(data_file)
+        
         # getting all the class coordinates
         # finding the diff with previous positions
         # excluding the first row since it will be (NaN, NaN)
         class_data = data.loc[data['class_id'] == float(class_id)][['x', 'y']].diff()
-        self.dataframe = class_data[1:] 
+        self.dataframe = class_data[1:]
+        
         self.input_len = input_len
         self.pred_len = pred_len
-        self.block_len = input_len + pred_len 
-
+        self.block_len = (input_len + pred_len)
+        
     def __len__(self):
-        return len(self.dataframe) // self.block_len 
+        block_size = self.block_len // 2
+        num_batches = len(self.dataframe) // block_size 
+        return max(0, num_batches - 1) 
     
     def __getitem__(self, idx):
         items = self.dataframe[['x', 'y']].iloc[idx:idx+self.block_len]
@@ -39,8 +43,3 @@ class TrajectoryDataset(Dataset):
     
     def getStd(self):
         return torch.Tensor([self.dataframe['x'].std(), self.dataframe['y'].std()])
-
-if __name__ == "__main__":
-    dataset = TrajectoryDataset("1920_1080_probe.csv", 1)
-    print(dataset[0])
-    
