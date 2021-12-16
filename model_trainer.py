@@ -7,6 +7,10 @@ from datasets import TrajectoryDataset
 from torch.utils.data import DataLoader
 
 def trainModel(classes_file, modeltype, dataset_file, input_size, pred_size, epochs, weights=None, output_path=None):
+	device = torch.device('cpu')	
+	if torch.cuda.is_available():
+		device = torch.device('cuda')
+
 	validatePath(classes_file)
 	validatePath(dataset_file)
 
@@ -25,6 +29,8 @@ def trainModel(classes_file, modeltype, dataset_file, input_size, pred_size, epo
 			from predictors import GRUTrajectory
 			model = GRUTrajectory(input_size, pred_size)
 		
+		model = model.to(device)
+
 		if output_path is None:	
 			dir_path = os.path.join(os.getcwd(), f"output/{classname}_{modeltype}")
 		else:
@@ -43,9 +49,12 @@ def trainModel(classes_file, modeltype, dataset_file, input_size, pred_size, epo
 				spinner.text = f"[{classname} : Epoch {(epoch + 1)}] Batch {i+1}"
 				
 				inputs, labels = data
+				inputs = inputs.to(device)
+				labels = labels.to(device)
+    
 				optimizer.zero_grad()
 				
-				outputs = model(inputs)
+				outputs = model(inputs).to(device)
 				loss = criterion(outputs, labels)
 			
 				loss.backward()
@@ -66,7 +75,6 @@ def trainModel(classes_file, modeltype, dataset_file, input_size, pred_size, epo
 		torch.save(model.state_dict(), os.path.join(dir_path, "final.pth"))
 
 		model.eval()
-
 		print(f"Average Loss for {classname} trained using {modeltype} is {round(average_loss / epochs, 5)}")
 
 if __name__ == "__main__":
