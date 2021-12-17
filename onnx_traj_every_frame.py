@@ -407,8 +407,7 @@ if __name__ == "__main__":
                         help="Number of frames to run the video")
     parser.add_argument('-v', '--verbose', action='store_true',
                         default=False, help="Enable more details")
-    parser.add_argument('-c', '--classes', type=int,
-                        default=5, help="Number of classes model trained on")
+    parser.add_argument('-c', '--classes', help="Number of classes model trained on")
     parser.add_argument('-d', '--dataset', help="Path to the dataset file")
     parser.add_argument('-t', '--trajectory', help="Path to onnx model directory")
     parser.add_argument('-p', '--pytorch_model', help="Pytorch Model used RNN / LSTM / GRU")
