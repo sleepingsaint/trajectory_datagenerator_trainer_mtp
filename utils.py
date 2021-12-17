@@ -38,6 +38,9 @@ def splitDataset(dataset, ratio=0.2):
 
 
 def convertOnnxModel(model, weights_path, output, input_tensor=torch.rand((1, 8, 2))):
+    if not os.path.exists(weights_path):
+        print("Weights doesn't exists for this model")
+        return
     model.load_state_dict(torch.load(weights_path))
     model.eval()
 
@@ -79,7 +82,7 @@ def load_models(dir_path, classes_path, model_type):
     ort_sessions = []
     for classname in classes:
         model_path = os.path.join(dir_path, f"{classname}_{model_type}.onnx")
-        ort_session = onnxruntime.InferenceSession(model_path, providers=["CUDAExecutionProvider", ])
+        ort_session = onnxruntime.InferenceSession(model_path)
         ort_sessions.append(ort_session)
 
     return ort_sessions
