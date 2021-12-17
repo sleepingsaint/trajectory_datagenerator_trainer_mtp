@@ -1,4 +1,5 @@
 import os
+import torch
 import argparse
 from utils import loadClasses, convertOnnxModel, ensureDir
 
@@ -6,6 +7,9 @@ def validateDir(path):
 	return os.path.exists(path) and os.path.isdir(path)
 
 def export(weights_dir, classes_file, model_types, output_dir):
+    device = torch.device('cpu')
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
     assert validateDir(weights_dir)
     ensureDir(output_dir)
     classes = loadClasses(classes_file)
@@ -13,13 +17,13 @@ def export(weights_dir, classes_file, model_types, output_dir):
         for classname in classes:
             if model_type == "RNN":
                 from predictors import RNNTrajectory
-                model = RNNTrajectory(8, 12)
+                model = RNNTrajectory(8, 12, device)
             elif model_type == "LSTM":
                 from predictors import LSTMTrajectory
-                model = LSTMTrajectory(8, 12)
+                model = LSTMTrajectory(8, 12, device)
             else:
                 from predictors import GRUTrajectory
-                model = GRUTrajectory(8, 12)
+                model = GRUTrajectory(8, 12, device)
             
             weights_path = os.path.join(weights_dir, f"{classname}_{model_type}", "final.pth")
             output_path = os.path.join(output_dir, f"{classname}_{model_type}.onnx")
