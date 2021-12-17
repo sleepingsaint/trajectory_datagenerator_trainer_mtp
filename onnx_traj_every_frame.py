@@ -199,7 +199,7 @@ def getTrajectory(frame, input_width, input_height, bboxes, class_names):
         predictions_time = 0
 
     for label in detections_map:
-        if label in detections_map and len(detections_map[label][0]) >= 8:
+        if label in detections_map and len(detections_map[label][0]) >= 9:
             arr = np.array(detections_map[label], dtype=np.float32)
             delta = arr[:, 1:, 0:2] - arr[:, :-1, 0:2]
 
