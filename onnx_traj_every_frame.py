@@ -243,7 +243,7 @@ def getTrajectory(frame, input_width, input_height, bboxes, class_names):
             else:
                 ort_inputs = {window_session.get_inputs()[0].name: to_numpy(input_torch)}
                 out = person_session.run(None, ort_inputs)
-            dec_input = torch.cat([dec_input, out[:, -1:, :]], 1)
+            dec_input = out 
 
             end = time.time()
             predictions_time += (end - start)
